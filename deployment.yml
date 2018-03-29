@@ -1,0 +1,80 @@
+---
+- hosts: App_server
+  become: yes
+  vars:
+    download_url: http://download.oracle.com/otn-pub/java/jdk/8u162-b12/0da788060d494f5095bf8624735fa2f1/jdk-8u162-linux-x64.rpm
+    download_folder: /home/ec2-user/Software/java
+    java_archive: "{{download_folder}}"
+  
+  
+  tasks:
+  - name: Creating a softwre folder to load softwares
+    file:
+     path=/home/ec2-user/software
+     owner=root
+     group=root
+     mode=0755
+     state=directory
+	 
+  - name: Creating a Java folder to copy Java rpm
+    file:
+     path=/home/ec2-user/Software/java
+     owner=root
+     group=root
+     mode=0755
+     state=directory
+	 
+  - name: Downloading Oracle jdk1.8
+    command: "wget -q -O {{java_archive}} --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' {{download_url}}"
+	
+  - name: running the rpm file
+    yum:
+     name=/home/ec2-user/software/java/jdk-8u162-linux-x64.rpm
+     state=present
+	 
+  - name: creating a tomcat folder
+    file:
+     path=/home/ec2-user/tomcat
+     owner=root
+     group=root
+     mode=0755
+     state=directory
+
+  - name: Downloading tomcat zip file
+    unarchive:
+     src=http://www-us.apache.org/dist/tomcat/tomcat-8/v8.0.50/bin/apache-tomcat-8.0.50.tar.gz
+     dest=/home/ec2-user/tomcat
+     remote_src=True
+  
+  - name: start the Tomcat Server
+    command: "nohup /home/ec2-user/tomcat/apache-tomcat-8.0.50/bin/startup.sh"
+    tags: start tomcat server
+    
+  - name: stop the Tomcat Server
+    command: "/home/ec2-user/tomcat/apache-tomcat-8.0.50/bin/shutdown.sh"
+    tags: stop tomcat server
+	
+  - name: Deleting tomcat user file
+    file:
+     path=/home/ec2-user/tomcat/conf/tomcat-users.xml
+     state=absent
+     
+  - name: Moving tomcat users file for jenkins
+    copy:
+     src=/home/ec2-user/softwares/tomcat-users.xml
+     dest=/home/ec2-user/tomcat/apache-tomcat-8.0.50/conf/
+     owner=root
+     group=root
+     mode=0600
+     
+  - name: copying manager.xml to Jenkins server
+    copy:
+     src=/home/ec2-user/softwares/manager.xml
+     dest=/home/ec2-user/tomcat/apache-tomcat-8.0.50/conf/catalina/localhost/
+     owner=root
+     group=root
+     mode=0600
+	 
+  - name: Start Tomcat server
+    command: "nohup /home/ec2-user/tomcat/apache-tomcat-8.0.50/bin/startup.sh"
+    tags: starting server
