@@ -3,7 +3,7 @@
   become: yes
   vars:
     download_url: http://download.oracle.com/otn-pub/java/jdk/8u162-b12/0da788060d494f5095bf8624735fa2f1/jdk-8u162-linux-x64.rpm
-    download_folder: /home/ec2-user/Software/java
+    download_folder: /home/ec2-user/software/java
     java_archive: "{{download_folder}}"
   
   
@@ -17,7 +17,7 @@
      state=directory
   - name: Creating a Java folder to copy Java rpm
     file:
-     path=/home/ec2-user/Software/java
+     path=/home/ec2-user/software/java
      owner=root
      group=root
      mode=0755
