@@ -27,7 +27,10 @@
      mode=0755
      state=directory
   - name: Downloading Oracle jdk1.8
-    command: "wget -q -O {{java_archive}} --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' {{download_url}}"
+    get_url:
+     url={{download_url}}
+     header='Cookie:oraclelicense=accept-securebackup-cookie'
+     dest={{java_archive}}
   - name: running the rpm file
     yum:
      name=/home/ec2-user/software/java/jdk-8u162-linux-x64.rpm
