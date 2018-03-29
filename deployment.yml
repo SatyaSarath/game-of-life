@@ -55,7 +55,7 @@
     tags: stop tomcat server
   - name: Deleting tomcat user file
     file:
-     path=/home/ec2-user/tomcat/conf/tomcat-users.xml
+     path=/home/ec2-user/apache-tomcat-8.0.50/tomcat/conf/tomcat-users.xml
      state=absent
   - name: Moving tomcat users file for jenkins
     copy:
